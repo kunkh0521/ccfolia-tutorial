@@ -3,195 +3,201 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CCFolia 新手教學指南</title>
+    <title>CCFolia 教學指南</title>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
-        body { font-family: 'Noto Sans TC', sans-serif; background-color: #1a1a1a; color: #e5e5e5; }
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #111; color: #e5e5e5; }
         ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #2d2d2d; }
-        ::-webkit-scrollbar-thumb { background: #4a4a4a; border-radius: 4px; }
-        .glass-panel { background: rgba(35, 35, 35, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        ::-webkit-scrollbar-track { background: #1a1a1a; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
     <div id="root"></div>
     <script type="text/babel">
         const { useState, useEffect } = React;
+
+        // 圖示
         const Icon = ({ name, size = 24, className = "" }) => {
             const icons = {
-                globe: <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>,
-                box: <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>,
-                messageCircle: <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"/></svg>,
-                dices: <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect width="12" height="12" x="2" y="10" rx="2" ry="2"/><path d="m17.92 14 3.5-3.5a2.24 2.24 0 0 0 0-3l-5-4.92a2.24 2.24 0 0 0-3 0L10 6"/><path d="M6 18h.01"/><path d="M10 14h.01"/><path d="M15 6h.01"/><path d="M18 9h.01"/></svg>,
-                music: <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>,
-                sliders: <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="4" x2="4" y1="21" y2="14"/><line x1="4" x2="4" y1="10" y2="3"/><line x1="12" x2="12" y1="21" y2="12"/><line x1="12" x2="12" y1="8" y2="3"/><line x1="20" x2="20" y1="21" y2="16"/><line x1="20" x2="20" y1="12" y2="3"/><line x1="2" x2="6" y1="14" y2="14"/><line x1="10" x2="14" y1="8" y2="8"/><line x1="18" x2="22" y1="16" y2="16"/></svg>,
                 menu: <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>,
+                image: <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>,
                 chevronRight: <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m9 18 6-6-6-6"/></svg>
             };
             return icons[name] || null;
         };
 
-        const topics = [
+        // 文字高亮元件
+        const FormattedText = ({ text }) => {
+            const parts = text.split(/(\*\*.*?\*\*)/g);
+            return (
+                <div className="text-gray-300 leading-8 text-lg">
+                    {parts.map((part, i) => {
+                        if (part.startsWith('**') && part.endsWith('**')) {
+                            return <span key={i} className="text-teal-400 font-bold mx-1 px-1.5 bg-teal-900/30 rounded border border-teal-500/30">{part.slice(2, -2)}</span>;
+                        }
+                        return part;
+                    })}
+                </div>
+            );
+        };
+
+        // 資料內容
+        const tutorialData = [
             {
-                id: 'language',
-                title: '切換中文介面',
-                icon: 'globe',
-                description: '將 CCFolia 的介面語言調整為繁體中文，讓操作更順手。',
-                steps: [
-                    { text: '看向畫面左側的選單列，找到齒輪圖示的「設定」按鈕。', highlight: '設定 (Settings)' },
-                    { text: '在設定視窗中，找到「Language」選項。', highlight: 'Language' },
-                    { text: '在下拉選單中選擇「Traditional Chinese / 繁體中文」。', highlight: '繁體中文' },
-                    { text: '介面會自動刷新，現在你可以看到中文介面了！', highlight: '完成' }
-                ],
-                visualHint: '左側齒輪圖示 -> 彈出視窗 Language 選單'
+                id: 'lang', category: '基本教學', title: '1. 切換中文版',
+                content: [
+                    { type: 'text', text: '首先先到 CCFOLIA 頁面，並點選右上角的 **語言**。' },
+                    { type: 'text', text: '接著改成 **繁體中文** 即可。' },
+                    { type: 'image', hint: '右上角語言選單 -> 選擇繁體中文' }
+                ]
             },
             {
-                id: 'hide-token',
-                title: '將棋子收起',
-                icon: 'box',
-                description: '當場景切換或角色退場時，如何將桌面上的角色棋子收回列表中。',
-                steps: [
-                    { text: '在盤面上找到你想收起的角色棋子（Token）。', highlight: '選取棋子' },
-                    { text: '對著棋子點擊「右鍵」（手機版為長按）。', highlight: '右鍵選單' },
-                    { text: '選擇選單中的「消除角色棋子」（或者刪除圖示）。', highlight: '消除/Delete' },
-                    { text: '別擔心！這只是把棋子從桌上拿走，角色資料依然保存在你的角色列表中。', highlight: '資料安全' }
-                ],
-                visualHint: '右鍵點擊棋子 -> 選擇消除(Delete)'
+                id: 'hide', category: '基本教學', title: '2. 將棋子收起',
+                content: [
+                    { type: 'text', text: '對著角色接著並對角色點選 **右鍵**。' },
+                    { type: 'text', text: '選擇 **To own piece**。' },
+                    { type: 'text', text: '接著點選對話框上的 **人像 icon**，並選擇你的角色。' },
+                    { type: 'image', hint: '右鍵選單 To own piece -> 對話框選擇角色' }
+                ]
             },
             {
-                id: 'color',
-                title: '改變名字顏色',
-                icon: 'messageCircle',
-                description: '角色不在盤面上時，如何設定他在聊天室發話時的名字顏色。',
-                steps: [
-                    { text: '打開畫面中央上方的「角色列表」按鈕。', highlight: '角色列表' },
-                    { text: '找到該角色，點擊右側的「編輯」筆型圖示。', highlight: '編輯角色' },
-                    { text: '在編輯視窗中，找到「顏色（Color）」區塊。', highlight: '顏色設定' },
-                    { text: '點擊色塊選擇喜歡的顏色，這會影響聊天室顯示的名字顏色以及骰子的顏色。', highlight: '選擇顏色' }
-                ],
-                visualHint: '角色編輯視窗 -> 點擊色塊 -> 選擇顏色'
+                id: 'dice', category: '基本教學', title: '3. 如何擲骰',
+                content: [
+                    { type: 'text', text: '可以直接點選對話框上的 **骰子**。由右到左是 **D4、D6、D8、D12、D20、D100**。' },
+                    { type: 'image', hint: '對話框骰子列 (D4~D100)' },
+                    { type: 'text', text: '對話框名字右手邊有一個 **小圖標**。點開來後會跳出 **常用對話表**。' },
+                    { type: 'text', text: '接著點擊需要的語法會自動輸入到訊息裡，**Enter** 送出。' },
+                    { type: 'image', hint: '常用對話表選單 -> 點擊語法' },
+                    { type: 'text', text: '**雙擊** 則會自動送出並且擲骰。' },
+                    { type: 'image', hint: '雙擊語法直接送出' }
+                ]
             },
             {
-                id: 'dice',
-                title: '如何擲骰',
-                icon: 'dices',
-                description: '在聊天室進行判定或單純擲骰子的方法。',
-                steps: [
-                    { text: '確保你已在聊天室視窗選定好要發言的「角色」。', highlight: '選擇發言人' },
-                    { text: '在輸入框輸入骰子代碼，格式為「數量d面數」。例如：擲 1 顆 100 面骰，輸入「1d100」。', highlight: '1d100' },
-                    { text: '如果是克蘇魯神話 (CoC) 系統，可以直接輸入技能數值進行判定（需設定好技能）。', highlight: 'CCb<=60' },
-                    { text: '按下 Enter 發送，系統會自動顯示擲骰結果。', highlight: '發送' }
-                ],
-                visualHint: '聊天輸入框 -> 輸入 1d100 -> 按下 Enter'
+                id: 'music', category: '基本教學', title: '4. 調整房間音樂',
+                content: [
+                    { type: 'text', text: '左手邊的 **拉條** 直接拉動可以調整大小聲。' },
+                    { type: 'image', hint: '調整左側音量拉條' },
+                    { type: 'text', text: '中間的 **靜音鈕** 會關閉音樂。' },
+                    { type: 'image', hint: '點擊中間靜音鈕' },
+                    { type: 'text', text: '右手邊的 **暫停鈕** 會關閉使用者的音樂，請勿點擊。' },
+                    { type: 'image', hint: '右側暫停按鈕 (警告圖示)' }
+                ]
             },
             {
-                id: 'music',
-                title: '調整房間音樂',
-                icon: 'music',
-                description: '如何播放 BGM 以及調整自己聽到的音量大小。',
-                steps: [
-                    { text: '在右側選單找到音符圖示的「BGM」按鈕。', highlight: 'BGM 按鈕' },
-                    { text: '這裡會顯示目前播放的音樂列表。', highlight: '音樂列表' },
-                    { text: '調整「Master Volume」可以改變房間整體音量（僅限 GM）。', highlight: 'GM 權限' },
-                    { text: '每個玩家可以拖動下方的滑桿，調整「自己聽到」的音量大小，不會影響其他人。', highlight: '個人音量' }
-                ],
-                visualHint: '右側音符選單 -> 拖動音量滑桿'
+                id: 'operate', category: '基本教學', title: '5. 操作房間及物品',
+                content: [
+                    { type: 'text', text: '滑動 **滾輪** 可以放大或縮小房間畫面。或者點擊右下角的 **+/-**。' },
+                    { type: 'text', text: '按住不放物品可以 **移動位置**。' },
+                    { type: 'image', hint: '滾輪縮放或拖拉物品' }
+                ]
             },
             {
-                id: 'stats',
-                title: '調整角色數值',
-                icon: 'sliders',
-                description: '如何顯示 HP/MP 條，並在遊戲中進行增減。',
-                steps: [
-                    { text: '進入角色編輯視窗（點擊角色列表的筆型圖示）。', highlight: '編輯角色' },
-                    { text: '找到「狀態（Parameters）」區塊。', highlight: '狀態設定' },
-                    { text: '輸入「項目名」（如 HP）與「數值」（如 12）。若要顯示長條圖，請輸入「12/12」。', highlight: '目前值/最大值' },
-                    { text: '保存後，盤面上的棋子下方會出現狀態條。直接點擊狀態條即可快速輸入「-3」或「+5」來扣血或補血。', highlight: '快速運算' }
-                ],
-                visualHint: '角色編輯 -> 輸入 HP: 10/10 -> 盤面操作'
+                id: 'color', category: '進階教學', title: '1. 改變名字顏色',
+                content: [
+                    { type: 'text', text: '角色收起後，在名字的右手邊有一個 **調色盤**。' },
+                    { type: 'text', text: '點選後就會跳出調色盤，選取顏色後 **ID 顏色** 就會更改。' },
+                    { type: 'image', hint: '點擊調色盤更改 ID 顏色' }
+                ]
+            },
+            {
+                id: 'stats', category: '進階教學', title: '2. 調整角色數值',
+                content: [
+                    { type: 'text', text: '點選左邊 **角色頭像** 就會跳出可更改的數值。' },
+                    { type: 'text', text: '點 **上/下**，就會增加/減少。' },
+                    { type: 'image', hint: '點擊頭像 -> 上下調整數值' }
+                ]
             }
         ];
 
+        // 圖片佔位符
         const VisualPlaceholder = ({ hint }) => (
-            <div className="w-full aspect-video bg-gray-800 rounded-lg border-2 border-dashed border-gray-600 flex flex-col items-center justify-center p-6 text-gray-400 mb-6 relative overflow-hidden group">
-                <div className="absolute inset-0 bg-gradient-to-tr from-gray-800 to-gray-700 opacity-50"></div>
-                <div className="z-10 flex flex-col items-center text-center">
-                    <div className="bg-gray-700 p-4 rounded-full mb-3 group-hover:scale-110 transition-transform duration-300">
-                        <Icon name="dices" size={32} className="text-teal-400" />
+            <div className="w-full bg-[#161616] rounded-xl border border-gray-800 p-1 my-6 shadow-xl overflow-hidden group hover:border-gray-600 transition-all duration-300">
+                <div className="aspect-video w-full bg-gray-800/30 rounded-lg border border-dashed border-gray-700 flex flex-col items-center justify-center relative">
+                    {/* 若要換圖，把下方 div 換成 <img src="你的連結.gif" className="w-full h-full object-cover" /> */}
+                    <div className="z-10 flex flex-col items-center text-center px-4 pointer-events-none">
+                        <div className="bg-gray-900 p-3 rounded-full mb-3 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                            <Icon name="image" size={28} className="text-teal-500" />
+                        </div>
+                        <p className="text-gray-400 font-medium mb-1 tracking-wide">GIF 圖片位置</p>
+                        <span className="text-xs text-gray-500 bg-black/40 px-2 py-1 rounded border border-gray-700/50">{hint}</span>
                     </div>
-                    <p className="font-medium text-lg text-gray-300">此處為 GIF 演示區</p>
-                    <p className="text-sm text-gray-500 mt-2">畫面示意：{hint}</p>
-                </div>
-                <div className="absolute bottom-4 right-4 flex gap-2">
-                    <div className="w-2 h-2 bg-teal-500 rounded-full animate-ping"></div>
-                    <div className="w-2 h-2 bg-teal-500 rounded-full animate-bounce"></div>
                 </div>
             </div>
         );
 
         const App = () => {
-            const [activeTopic, setActiveTopic] = useState(topics[0]);
+            const [activeTopic, setActiveTopic] = useState(tutorialData[0]);
             const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
             useEffect(() => {
                 if (window.innerWidth < 768) setIsSidebarOpen(false);
+                const mainContent = document.getElementById('main-content');
+                if(mainContent) mainContent.scrollTop = 0;
             }, [activeTopic]);
 
+            const categories = [...new Set(tutorialData.map(t => t.category))];
+
             return (
-                <div className="flex h-screen overflow-hidden bg-[#1a1a1a] text-gray-100">
-                    <div className="md:hidden fixed top-0 w-full h-16 bg-[#232323] border-b border-gray-700 z-50 flex items-center justify-between px-4">
-                        <h1 className="text-xl font-bold text-teal-400">CCFolia 指南</h1>
-                        <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-2 text-gray-300 hover:text-white"><Icon name="menu" /></button>
+                <div className="flex h-screen overflow-hidden bg-[#111] text-gray-100 font-sans">
+                    {/* Mobile Header */}
+                    <div className="md:hidden fixed top-0 w-full h-16 bg-[#1a1a1a]/95 backdrop-blur border-b border-gray-800 z-50 flex items-center justify-between px-4">
+                        <h1 className="text-lg font-bold text-teal-500">CCFolia 教學</h1>
+                        <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-2 text-gray-300"><Icon name="menu" /></button>
                     </div>
-                    <div className={`fixed inset-y-0 left-0 z-40 w-64 bg-[#232323] border-r border-gray-700 transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} flex flex-col`}>
-                        <div className="p-6 border-b border-gray-700 hidden md:block">
-                            <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-cyan-400">CCFolia 指南</h1>
-                            <p className="text-xs text-gray-500 mt-2">新手入門必備手冊</p>
+
+                    {/* Sidebar */}
+                    <div className={`fixed inset-y-0 left-0 z-40 w-72 bg-[#161616] border-r border-gray-800 transform transition-transform duration-300 md:relative md:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} flex flex-col shadow-2xl md:shadow-none`}>
+                        <div className="p-8 border-b border-gray-800 hidden md:block">
+                            <h1 className="text-2xl font-bold text-white">CCFolia <span className="text-teal-500">指南</span></h1>
+                            <p className="text-xs text-gray-500 mt-2 tracking-wider">TRPG 新手操作手冊</p>
                         </div>
-                        <nav className="flex-1 overflow-y-auto p-4 space-y-2 mt-16 md:mt-0">
-                            {topics.map((topic) => (
-                                <button key={topic.id} onClick={() => setActiveTopic(topic)} className={`w-full flex items-center p-3 rounded-lg transition-all duration-200 group ${activeTopic.id === topic.id ? 'bg-teal-900/30 text-teal-400 border border-teal-800/50' : 'text-gray-400 hover:bg-gray-800 hover:text-gray-200'}`}>
-                                    <Icon name={topic.icon} size={20} className={`mr-3 ${activeTopic.id === topic.id ? 'text-teal-400' : 'text-gray-500 group-hover:text-gray-300'}`} />
-                                    <span className="font-medium">{topic.title}</span>
-                                </button>
+                        <nav className="flex-1 overflow-y-auto p-6 mt-16 md:mt-0 space-y-8">
+                            {categories.map(cat => (
+                                <div key={cat}>
+                                    <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3 pl-2 border-l-2 border-teal-500/30 ml-1">{cat}</h3>
+                                    <div className="space-y-1">
+                                        {tutorialData.filter(t => t.category === cat).map(topic => (
+                                            <button key={topic.id} onClick={() => setActiveTopic(topic)} className={`w-full text-left px-4 py-3 rounded-lg transition-all text-[15px] flex items-center justify-between group ${activeTopic.id === topic.id ? 'bg-teal-500/10 text-teal-400 font-medium' : 'text-gray-400 hover:bg-gray-800'}`}>
+                                                <span>{topic.title.split('. ')[1]}</span>
+                                                {activeTopic.id === topic.id && <Icon name="chevronRight" size={16} className="text-teal-500" />}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
                             ))}
                         </nav>
                     </div>
-                    {isSidebarOpen && <div className="fixed inset-0 bg-black/50 z-30 md:hidden" onClick={() => setIsSidebarOpen(false)}></div>}
-                    <main className="flex-1 overflow-y-auto p-4 md:p-8 pt-20 md:pt-8 scroll-smooth relative">
-                        <div className="max-w-3xl mx-auto relative z-10">
-                            <div className="mb-8">
-                                <div className="flex items-center space-x-3 text-teal-500 mb-2">
-                                    <Icon name={activeTopic.icon} size={28} />
-                                    <span className="text-sm font-bold tracking-wider uppercase opacity-75">Tutorial {topics.indexOf(activeTopic) + 1} / {topics.length}</span>
-                                </div>
-                                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">{activeTopic.title}</h2>
-                                <p className="text-lg text-gray-400 leading-relaxed">{activeTopic.description}</p>
+
+                    {/* Main Content */}
+                    <main id="main-content" className="flex-1 overflow-y-auto bg-[#111] relative scroll-smooth">
+                        <div className="max-w-4xl mx-auto p-5 md:p-12 pt-24 md:pt-16 pb-32">
+                            <div className="mb-10 animate-fade-in">
+                                <div className="inline-flex items-center px-3 py-1 rounded-full bg-gray-800/50 border border-gray-700 text-xs text-teal-400 mb-4 font-medium">{activeTopic.category}</div>
+                                <h2 className="text-3xl md:text-4xl font-bold text-white leading-tight">{activeTopic.title}</h2>
+                                <div className="h-1 w-24 bg-gradient-to-r from-teal-600 to-teal-800 mt-6 rounded-full"></div>
                             </div>
-                            <div className="mb-10 shadow-2xl shadow-black/50 rounded-lg">
-                                <VisualPlaceholder hint={activeTopic.visualHint} />
+                            <div className="space-y-6">
+                                {activeTopic.content.map((block, index) => (
+                                    <div key={index} className={`animate-fade-in ${block.type === 'image' ? 'pl-0 md:pl-6' : 'flex items-start'}`} style={{animationDelay: `${index * 0.05}s`}}>
+                                        {block.type === 'text' && <div className="mr-4 mt-3 w-1.5 h-1.5 rounded-full bg-teal-500 shadow-[0_0_8px_rgba(20,184,166,0.6)] flex-shrink-0"></div>}
+                                        {block.type === 'text' ? <FormattedText text={block.text} /> : <VisualPlaceholder hint={block.hint} />}
+                                    </div>
+                                ))}
                             </div>
-                            <div className="glass-panel rounded-xl p-6 md:p-8">
-                                <h3 className="text-xl font-semibold text-white mb-6 flex items-center"><span className="bg-teal-600 w-1 h-6 mr-3 rounded-full"></span>操作步驟</h3>
-                                <div className="space-y-6">
-                                    {activeTopic.steps.map((step, index) => (
-                                        <div key={index} className="flex items-start">
-                                            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-800 border border-gray-600 flex items-center justify-center text-teal-400 font-bold text-sm mt-1 mr-4">{index + 1}</div>
-                                            <div className="flex-1 pt-1"><p className="text-gray-300 leading-relaxed">{step.text}</p></div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                            <div className="mt-12 flex justify-between items-center pt-8 border-t border-gray-800">
-                                <button onClick={() => { const currIdx = topics.indexOf(activeTopic); if (currIdx > 0) setActiveTopic(topics[currIdx - 1]); }} disabled={topics.indexOf(activeTopic) === 0} className={`flex items-center px-4 py-2 rounded-md transition-colors ${topics.indexOf(activeTopic) === 0 ? 'text-gray-700 cursor-not-allowed' : 'text-gray-400 hover:text-white hover:bg-gray-800'}`}>← 上一章</button>
-                                <button onClick={() => { const currIdx = topics.indexOf(activeTopic); if (currIdx < topics.length - 1) setActiveTopic(topics[currIdx + 1]); }} disabled={topics.indexOf(activeTopic) === topics.length - 1} className={`flex items-center px-6 py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-md transition-all shadow-lg shadow-teal-900/20 ${topics.indexOf(activeTopic) === topics.length - 1 ? 'opacity-50 cursor-not-allowed' : ''}`}>下一章 →</button>
+                            <div className="mt-24 flex justify-between items-center pt-10 border-t border-gray-800/50">
+                                <button onClick={() => { const curr = tutorialData.indexOf(activeTopic); if (curr > 0) setActiveTopic(tutorialData[curr - 1]); }} disabled={tutorialData.indexOf(activeTopic) === 0} className="group flex items-center px-5 py-3 rounded-lg text-gray-400 hover:text-white disabled:opacity-30 transition-colors"><span className="mr-2">←</span> 上一章</button>
+                                <button onClick={() => { const curr = tutorialData.indexOf(activeTopic); if (curr < tutorialData.length - 1) setActiveTopic(tutorialData[curr + 1]); }} disabled={tutorialData.indexOf(activeTopic) === tutorialData.length - 1} className="group flex items-center px-6 py-3 bg-teal-600 hover:bg-teal-500 text-white rounded-lg shadow-lg disabled:opacity-50 transition-all">下一章 <span className="ml-2">→</span></button>
                             </div>
                         </div>
                     </main>
+                    {isSidebarOpen && <div className="fixed inset-0 bg-black/80 z-30 md:hidden backdrop-blur-sm" onClick={() => setIsSidebarOpen(false)}></div>}
                 </div>
             );
         };
