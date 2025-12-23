@@ -24,7 +24,6 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
         
-        /* 防止選取文字，讓拖曳體驗更好 */
         .noselect {
             -webkit-touch-callout: none;
             -webkit-user-select: none;
@@ -74,10 +73,7 @@
         };
 
         // --- 教學內容資料 ---
-        // 請將您的 WEBM 或圖片連結填入 src 欄位
-        // 範例: src: './images/demo.webm'
         const tutorialData = [
-            // --- 基本教學 ---
             {
                 id: 'lang',
                 category: '基本教學',
@@ -139,7 +135,6 @@
                     { type: 'image', src: 'https://files.catbox.moe/3s7g9i.webm', hint: '滾輪縮放或拖拉物品' }
                 ]
             },
-            // --- 進階教學 ---
             {
                 id: 'color',
                 category: '進階教學',
@@ -162,7 +157,7 @@
             }
         ];
 
-        // 媒體顯示元件：支援縮放、拖曳
+        // 媒體顯示元件
         const MediaDisplay = ({ src, hint }) => {
             const [scale, setScale] = useState(1);
             const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -170,7 +165,6 @@
             const dragStart = useRef({ x: 0, y: 0 });
             const containerRef = useRef(null);
 
-            // 如果沒有提供 src，顯示佔位符
             if (!src) {
                 return (
                     <div className="w-full bg-[#161616] rounded-xl border border-gray-800 p-1 my-6 shadow-xl overflow-hidden group hover:border-gray-600 transition-all duration-300">
@@ -190,11 +184,10 @@
 
             const isVideo = src.toLowerCase().endsWith('.webm') || src.toLowerCase().endsWith('.mp4');
 
-            // 處理縮放
             const handleZoom = (delta) => {
                 setScale(prev => {
-                    const newScale = Math.min(Math.max(1, prev + delta), 5); // 限制 1x ~ 5x
-                    if (newScale === 1) setPosition({ x: 0, y: 0 }); // 縮回原大小時重置位置
+                    const newScale = Math.min(Math.max(1, prev + delta), 5);
+                    if (newScale === 1) setPosition({ x: 0, y: 0 });
                     return newScale;
                 });
             };
@@ -204,7 +197,6 @@
                 setPosition({ x: 0, y: 0 });
             };
 
-            // 處理滾輪縮放
             const handleWheel = (e) => {
                 if(e.ctrlKey || scale > 1) {
                     e.preventDefault();
@@ -213,10 +205,9 @@
                 }
             };
 
-            // 拖曳邏輯
             const onMouseDown = (e) => {
                 if (scale > 1) {
-                    e.preventDefault(); // 防止預設的圖片拖曳行為
+                    e.preventDefault();
                     setIsDragging(true);
                     dragStart.current = { x: e.clientX - position.x, y: e.clientY - position.y };
                 }
@@ -239,7 +230,6 @@
                     className="w-full my-6 rounded-xl shadow-2xl border border-gray-800 bg-[#161616] relative group noselect"
                     onMouseLeave={onMouseUp}
                 >
-                    {/* 媒體容器 - 加入 overflow-hidden 避免拖曳超出 */}
                     <div 
                         ref={containerRef}
                         className="overflow-hidden rounded-t-xl relative bg-black flex items-center justify-center min-h-[200px]"
@@ -249,7 +239,6 @@
                         onMouseUp={onMouseUp}
                         style={{ cursor: scale > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default' }}
                     >
-                        {/* 實際媒體物件 */}
                         <div 
                             style={{ 
                                 transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
@@ -260,7 +249,7 @@
                             {isVideo ? (
                                 <video 
                                     src={src}
-                                    className="w-full h-auto block pointer-events-none" // 禁止影片預設互動以免干擾拖曳
+                                    className="w-full h-auto block pointer-events-none"
                                     autoPlay
                                     loop
                                     muted
@@ -275,7 +264,6 @@
                             )}
                         </div>
 
-                        {/* 縮放提示 (僅在放大時顯示) */}
                         {scale > 1 && (
                             <div className="absolute top-3 left-3 bg-black/70 backdrop-blur text-white text-xs px-2 py-1 rounded border border-gray-700 pointer-events-none z-10">
                                 {Math.round(scale * 100)}%
@@ -283,38 +271,15 @@
                         )}
                     </div>
 
-                    {/* 控制列 (Overlay) */}
                     <div className="bg-[#0f0f0f] border-t border-gray-800 px-4 py-2 flex items-center justify-between">
                         <div className="flex items-center gap-2">
                             <Icon name={isVideo ? "video" : "image"} size={14} className="text-teal-500/70" />
                             <span className="text-xs text-gray-400 font-mono tracking-wide hidden sm:inline">{hint}</span>
                         </div>
-                        
-                        {/* 縮放控制按鈕 */}
                         <div className="flex items-center gap-1 bg-gray-800/50 rounded-lg p-1 border border-gray-700">
-                            <button 
-                                onClick={() => handleZoom(-0.5)} 
-                                disabled={scale <= 1}
-                                className="p-1 hover:bg-gray-700 rounded text-gray-300 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
-                                title="縮小"
-                            >
-                                <Icon name="minus" size={16} />
-                            </button>
-                            <button 
-                                onClick={resetZoom}
-                                className="p-1 hover:bg-gray-700 rounded text-teal-400 transition-colors"
-                                title="重置大小"
-                            >
-                                <Icon name="refresh" size={14} />
-                            </button>
-                            <button 
-                                onClick={() => handleZoom(0.5)} 
-                                disabled={scale >= 5}
-                                className="p-1 hover:bg-gray-700 rounded text-gray-300 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
-                                title="放大"
-                            >
-                                <Icon name="plus" size={16} />
-                            </button>
+                            <button onClick={() => handleZoom(-0.5)} disabled={scale <= 1} className="p-1 hover:bg-gray-700 rounded text-gray-300 disabled:opacity-30 disabled:hover:bg-transparent transition-colors" title="縮小"><Icon name="minus" size={16} /></button>
+                            <button onClick={resetZoom} className="p-1 hover:bg-gray-700 rounded text-teal-400 transition-colors" title="重置"><Icon name="refresh" size={14} /></button>
+                            <button onClick={() => handleZoom(0.5)} disabled={scale >= 5} className="p-1 hover:bg-gray-700 rounded text-gray-300 disabled:opacity-30 disabled:hover:bg-transparent transition-colors" title="放大"><Icon name="plus" size={16} /></button>
                         </div>
                     </div>
                 </div>
@@ -325,6 +290,30 @@
             const [activeTopic, setActiveTopic] = useState(tutorialData[0]);
             const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
+            // 路由處理
+            const changeTopic = (topic) => {
+                setActiveTopic(topic);
+                window.location.hash = topic.id;
+            };
+
+            useEffect(() => {
+                const handleHashChange = () => {
+                    const hash = window.location.hash.replace('#', '');
+                    if (hash) {
+                        const targetTopic = tutorialData.find(t => t.id === hash);
+                        if (targetTopic) setActiveTopic(targetTopic);
+                    } else {
+                        setActiveTopic(tutorialData[0]);
+                    }
+                };
+
+                // 初始化檢查
+                handleHashChange();
+
+                window.addEventListener('hashchange', handleHashChange);
+                return () => window.removeEventListener('hashchange', handleHashChange);
+            }, []);
+
             useEffect(() => {
                 if (window.innerWidth < 768) setIsSidebarOpen(false);
                 const mainContent = document.getElementById('main-content');
@@ -332,6 +321,10 @@
             }, [activeTopic]);
 
             const categories = [...new Set(tutorialData.map(t => t.category))];
+            
+            const currentIndex = tutorialData.indexOf(activeTopic);
+            const prevTopic = currentIndex > 0 ? tutorialData[currentIndex - 1] : null;
+            const nextTopic = currentIndex < tutorialData.length - 1 ? tutorialData[currentIndex + 1] : null;
 
             return (
                 <div className="flex h-screen overflow-hidden bg-[#111] text-gray-100 font-sans selection:bg-teal-500/30">
@@ -358,7 +351,7 @@
                                         {tutorialData.filter(t => t.category === cat).map(topic => (
                                             <button
                                                 key={topic.id}
-                                                onClick={() => setActiveTopic(topic)}
+                                                onClick={() => changeTopic(topic)}
                                                 className={`w-full text-left px-4 py-3 rounded-lg transition-all text-[15px] flex items-center justify-between group ${
                                                     activeTopic.id === topic.id 
                                                     ? 'bg-teal-500/10 text-teal-400 font-medium shadow-[inset_2px_0_0_0_#14b8a6]' 
@@ -400,7 +393,6 @@
                                     } else if (block.type === 'image') {
                                         return (
                                             <div key={index} className="animate-fade-in pl-0 md:pl-6" style={{animationDelay: `${index * 0.05}s`}}>
-                                                {/* 這裡改用新的 MediaDisplay 元件 */}
                                                 <MediaDisplay src={block.src} hint={block.hint} />
                                             </div>
                                         );
@@ -411,21 +403,15 @@
                             {/* Footer Buttons */}
                             <div className="mt-24 flex justify-between items-center pt-10 border-t border-gray-800/50">
                                 <button 
-                                    onClick={() => {
-                                        const curr = tutorialData.indexOf(activeTopic);
-                                        if (curr > 0) setActiveTopic(tutorialData[curr - 1]);
-                                    }}
-                                    disabled={tutorialData.indexOf(activeTopic) === 0}
+                                    onClick={() => { if (prevTopic) changeTopic(prevTopic); }} 
+                                    disabled={!prevTopic} 
                                     className="group flex items-center px-5 py-3 rounded-lg text-gray-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                                 >
                                     <span className="mr-2 group-hover:-translate-x-1 transition-transform">←</span> 上一章
                                 </button>
                                 <button 
-                                    onClick={() => {
-                                        const curr = tutorialData.indexOf(activeTopic);
-                                        if (curr < tutorialData.length - 1) setActiveTopic(tutorialData[curr + 1]);
-                                    }}
-                                    disabled={tutorialData.indexOf(activeTopic) === tutorialData.length - 1}
+                                    onClick={() => { if (nextTopic) changeTopic(nextTopic); }} 
+                                    disabled={!nextTopic} 
                                     className="group flex items-center px-6 py-3 bg-teal-600 hover:bg-teal-500 text-white rounded-lg shadow-lg shadow-teal-900/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:-translate-y-0.5"
                                 >
                                     下一章 <span className="ml-2 group-hover:translate-x-1 transition-transform">→</span>
@@ -444,3 +430,5 @@
     </script>
 </body>
 </html>
+
+
