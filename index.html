@@ -57,20 +57,37 @@
 
         // 文字美化元件
         const FormattedText = ({ text }) => {
-            const parts = text.split(/(\*\*.*?\*\*|!!.*?!!)/g);
-            return (
-                <div className="text-gray-300 leading-8 text-lg">
-                    {parts.map((part, i) => {
-                        if (part.startsWith('**') && part.endsWith('**')) {
-                            return <span key={i} className="text-teal-400 font-bold mx-1 px-1.5 bg-teal-900/30 rounded border border-teal-500/30 shadow-[0_0_10px_rgba(20,184,166,0.1)]">{part.slice(2, -2)}</span>;
-                        } else if (part.startsWith('!!') && part.endsWith('!!')) {
-                            return <span key={i} className="text-red-400 font-bold mx-1 px-1.5 bg-red-900/30 rounded border border-red-500/30 shadow-[0_0_10px_rgba(248,113,113,0.2)]">{part.slice(2, -2)}</span>;
-                        }
-                        return part;
-                    })}
-                </div>
-            );
-        };
+    // 這裡是在告訴電腦：除了 **高亮** 和 !!紅色!!，還要認得 [文字](網址)
+    const parts = text.split(/(\*\*.*?\*\*|!!.*?!!|\[.*?\]\(.*?\))/g);
+    
+    return (
+        <div className="text-gray-300 leading-8 text-lg">
+            {parts.map((part, i) => {
+                // 1. 如果是 **粗體**
+                if (part.startsWith('**') && part.endsWith('**')) {
+                    return <span key={i} className="text-teal-400 font-bold mx-1 px-1.5 bg-teal-900/30 rounded border border-teal-500/30">{part.slice(2, -2)}</span>;
+                }
+                // 2. 如果是 !!警示!!
+                if (part.startsWith('!!') && part.endsWith('!!')) {
+                    return <span key={i} className="text-red-400 font-bold mx-1 px-1.5 bg-red-900/30 rounded border border-red-500/30">{part.slice(2, -2)}</span>;
+                }
+                // 3. 【新增的部分】如果是 [連結名稱](網址)
+                if (part.startsWith('[') && part.endsWith(')')) {
+                    const match = part.match(/^\[(.*?)\]\((.*?)\)$/);
+                    if (match) {
+                        return (
+                            <a key={i} href={match[2]} target="_blank" rel="noopener noreferrer" className="text-teal-400 hover:text-teal-300 underline decoration-dotted underline-offset-4 mx-1 transition-colors">
+                                {match[1]}
+                            </a>
+                        );
+                    }
+                }
+                // 4. 一般文字直接顯示
+                return part;
+            })}
+        </div>
+    );
+};
 
         // --- 教學內容資料 ---
         // !!! 這裡請將 src 替換成您的 GitHub Raw 連結 !!!
